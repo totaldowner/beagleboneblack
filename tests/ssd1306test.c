@@ -1,6 +1,7 @@
 #include "fsgpio.h"
 #include "spi.h"
 #include "ssd1306.h"
+#include "pbm.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -21,6 +22,7 @@ int main(int args, char *argv[])
     //int x=0;
     ssd1306_info *display; // ssd1306 device
     uint8_t *buffer = NULL;
+    pbm_image *img = NULL;
 
     //init
     printf("Setting up ssd1306\n");
@@ -136,7 +138,7 @@ int main(int args, char *argv[])
     /* Pixel Show By block swap */
     int z = 0;
 
-    for(z = 0; z < 50; z++)
+    for(z = 0; z < 10; z++)
     {
         for(x = 0; x < SSD1306_WIDTH; x++)
         {
@@ -158,6 +160,33 @@ int main(int args, char *argv[])
         ssd1306_show_buffer(display);
         usleep(40000);
     }
+
+    img = load_pbm("images/sadface.pbm");
+    printf("Image Loaded W:%d H:%d DATA:\n", img->width, img->height);
+    int byte_width = (img->width + (8 - (img->width % 8)))/8;
+    x = 0;
+    for(y = 0; y < img->height * byte_width; y++)
+    {
+        for(z = 7; z >= 0; z--)
+        {
+            printf("%d", (img->data[y] & (1<<z)) != 0 );
+            x++;
+            if(x == img->width)
+            {
+                z=-1;
+                printf("\n");
+                x = 0;
+            }
+        }
+    }
+
+    ssd1306_draw_pbm(display, img, 0, 0, 1);
+    ssd1306_show_buffer(display);
+    sleep(3);
+
+    ssd1306_draw_pbm(display, img, 20, 20, 0);
+    ssd1306_show_buffer(display);
+    free_pbm(img);
 
     sleep(3);
     ssd1306_destroy(display);

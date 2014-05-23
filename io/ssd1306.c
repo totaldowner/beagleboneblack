@@ -130,17 +130,49 @@ int ssd1306_set_buffer(ssd1306_info *display, uint8_t *buffer)
 
 int ssd1306_set_pixel(ssd1306_info *display, uint16_t x, uint16_t y)
 {
-    display->buffer[x + ((y/8) * SSD1306_WIDTH)] |= (1 << (y&7));
+    if(x < SSD1306_WIDTH && y < SSD1306_HEIGHT)
+    {
+        display->buffer[x + ((y/8) * SSD1306_WIDTH)] |= (1 << (y&7));
+    }
     return 0;
 }
 
 int ssd1306_clear_pixel(ssd1306_info *display, uint16_t x, uint16_t y)
 {
-    display->buffer[x + ((y/8) * SSD1306_WIDTH)] &= ~(1 << (y&7));
+    if(x < SSD1306_WIDTH && y < SSD1306_HEIGHT)
+    {
+        display->buffer[x + ((y/8) * SSD1306_WIDTH)] &= ~(1 << (y&7));
+    }
     return 0;
 }
 
-int ssd1306_draw_bitmap(uint8_t *bmp, int width, int height)
+int ssd1306_draw_pbm(ssd1306_info *display, pbm_image *img, uint16_t x, uint16_t y, uint8_t invert)
 {
+    int n = 0;
+    int z = 0;
+
+    int byte_width = (img->width + (8 - (img->width % 8)))/8;
+
+    for(n = 0; n < (img->height * byte_width); n++)
+    {
+        for(z = 7; z >= 0; z--)
+        {
+            uint16_t s_x = (((n % byte_width) + 1) * 8) - z + x;
+            uint16_t s_y = n/byte_width + y;
+            
+            if(s_x - x < img->width)
+            {
+                if((img->data[n] & (1 << z)) ^ (invert << z))
+                {
+                    ssd1306_set_pixel(display, s_x, s_y);
+                }
+                else
+                {
+                    ssd1306_clear_pixel(display, s_x, s_y);
+                }
+            }
+        }
+
+    }
     return 0;
 }

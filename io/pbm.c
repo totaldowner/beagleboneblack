@@ -13,13 +13,7 @@ pbm_image *load_pbm(char *path)
     }
 
     fscanf(fp, "%s", line);
-    if(line[0] != 'P' && line[1] != '1')
-    {
-        perror("Invalid PBM header.\n");
-        fclose(fp);
-        return NULL;
-    }
-
+    
     img = malloc(sizeof(pbm_image));
     if(img == NULL)
     {
@@ -41,7 +35,7 @@ pbm_image *load_pbm(char *path)
     }
     fread(img->data, (byte_width * img->height), 1, fp);
 
-    fclose(fp);
+    printf("%s Loaded\n", path);
     return img;
 }
 

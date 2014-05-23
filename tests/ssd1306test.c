@@ -2,6 +2,7 @@
 #include "spi.h"
 #include "ssd1306.h"
 #include "pbm.h"
+#include "pbm_font.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -118,7 +119,7 @@ int main(int args, char *argv[])
     ssd1306_set_buffer(display, buf);
     ssd1306_show_buffer(display);
 
-    sleep(3);
+    sleep(1);
 
     int x = 0;
     int y = 0;
@@ -133,7 +134,7 @@ int main(int args, char *argv[])
         ssd1306_show_buffer(display);
     }
 
-    sleep(3);
+    sleep(1);
     
     /* Pixel Show By block swap */
     int z = 0;
@@ -182,13 +183,26 @@ int main(int args, char *argv[])
 
     ssd1306_draw_pbm(display, img, 0, 0, 1);
     ssd1306_show_buffer(display);
-    sleep(3);
+    sleep(1);
 
     ssd1306_draw_pbm(display, img, 20, 20, 0);
     ssd1306_show_buffer(display);
     free_pbm(img);
+    sleep(1);
 
-    sleep(3);
+    ssd1306_clear_buffer(display);
+    pbm_font *font;
+    font = pbm_font_load("images/font5");
+    ssd1306_draw_text(display, font, 1, 0, 0, "ABCDEFGHIJKLMNO", 15);
+    ssd1306_draw_text(display, font, 1, 0, 6, "PQRSTUVWXYZ", 11);
+    ssd1306_draw_text(display, font, 1, 0, 12, "1234567890", 10);
+    ssd1306_draw_text(display, font, 1, 0, 18, "!@#$%^&*()", 10);
+    ssd1306_draw_text(display, font, 1, 0, 24, "~`_-+={[}]|\\:;\"'", 16);
+    ssd1306_draw_text(display, font, 1, 0, 30, "<,>.?/_ _", 10);
+    ssd1306_show_buffer(display);
+    pbm_font_free(font);
+    sleep(20);
+
     ssd1306_destroy(display);
     free(display);
     free(buffer);

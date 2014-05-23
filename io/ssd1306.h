@@ -4,6 +4,7 @@
 #include "spi.h"
 #include "fsgpio.h"
 #include "pbm.h"
+#include "pbm_font.h"
 
 /*
  * Command table. B1[1], B2[2], ... Means parameter with [x] bits of the byte
@@ -75,4 +76,5 @@ int ssd1306_set_buffer(ssd1306_info *display, uint8_t *buffer);
 int ssd1306_set_pixel(ssd1306_info *display, uint16_t x, uint16_t y);
 int ssd1306_clear_pixel(ssd1306_info *display, uint16_t x, uint16_t y);
 int ssd1306_draw_pbm(ssd1306_info *display, pbm_image *img, uint16_t x, uint16_t y, uint8_t invert);
+int ssd1306_draw_text(ssd1306_info *display, pbm_font *font, uint8_t padding, uint16_t x, uint16_t y, char *str, uint16_t length);
 #endif

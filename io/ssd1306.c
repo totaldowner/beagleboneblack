@@ -160,7 +160,7 @@ int ssd1306_draw_pbm(ssd1306_info *display, pbm_image *img, uint16_t x, uint16_t
             uint16_t s_x = (((n % byte_width) + 1) * 8) - z + x;
             uint16_t s_y = n/byte_width + y;
             
-            if(s_x - x < img->width)
+            if(s_x - x <= img->width)
             {
                 if((img->data[n] & (1 << z)) ^ (invert << z))
                 {
@@ -173,6 +173,21 @@ int ssd1306_draw_pbm(ssd1306_info *display, pbm_image *img, uint16_t x, uint16_t
             }
         }
 
+    }
+    return 0;
+}
+
+int ssd1306_draw_text(ssd1306_info *display, pbm_font *font, uint8_t padding,
+                      uint16_t x, uint16_t y, char *str, uint16_t length)
+{
+    int n = 0;
+    for(n = 0; (str[n] != 0) && (n < length); n++)
+    {
+        if(font->chars[(uint8_t)str[n]] != NULL)
+        {
+            ssd1306_draw_pbm(display, font->chars[(uint8_t)str[n]], x, y, 0);
+            x += padding + font->chars[(uint8_t)str[n]]->width;
+        }
     }
     return 0;
 }
